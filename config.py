@@ -53,6 +53,9 @@ SRC_DIR = USER_PATH + "/Documents/configs"
 # .config dir
 CNF_DIR = USER_PATH + "/.config"
 
+# .local/share dir
+LCL_DIR = USER_PATH + "/.local/share"
+
 
 def main():
 
@@ -86,9 +89,12 @@ def main():
     # others
     musikcube_installation()      # Musikcube installation..
 
+    # delete old temp dir if it exists
+    menage_temp_dir()
+
     # customization
-    font_installation()           # Fira code font installation..
     theme_installation()          # Mojave dark installation..
+    font_installation()           # Fira code font installation..
     icons_installation()          # Zafiro icons installation..
 
     # python libs
@@ -101,6 +107,7 @@ def main():
     vim_plugins_configuration()   # vim configuration..
     tmux_plugins_configuration()  # tmux configuration..
 
+    # notification sound
     notify()                      # notification sound
 
 
@@ -127,6 +134,8 @@ def create_symlinks():
 
         # musikcube/hotkeys
         CNF_DIR+"/musikcube/hotkeys": SRC_DIR+"/musikcube/hotkeys.json",
+
+        # eclipse (?)
     }
 
     for k, v in data.items():
@@ -164,7 +173,7 @@ def resolv_dns():
     # update resolv.conf
     subprocess.run(["sudo", "rm", "--verbose", "/etc/resolv.conf"])
 
-    # create the link
+    # create the symlink
     subprocess.run(["sudo", "ln", "-s",
                     "../run/resolvconf/resolv.conf",
                     "/etc/resolv.conf"])
@@ -195,7 +204,7 @@ def musikcube_installation():
     musikcube_url = musikcube_releases + musikcube_0_98_0
 
     # path
-    download_path = USER_PATH + "/musikcube.deb"
+    download_path = USER_PATH + "/temp"
 
     # wget deb file
     subprocess.run(["wget", "-O", download_path, musikcube_url])
@@ -214,29 +223,44 @@ def font_installation():
     ########
 
     # url
-    nerd_fonts_releases = "https://github.com/ryanoasis/nerd-fonts/releases"
-    fira_code_2_1_0 = "/download/v2.1.0/FiraMono.zip"
-    fira_code_url = nerd_fonts_releases + fira_code_2_1_0
+    hack_releases_url = "https://github.com/ryanoasis/nerd-fonts/releases"
+    version = "/download/v2.1.0/Hack.zip"
+    hack_font_url = hack_releases_url + version
 
     # download path
-    download_path = USER_PATH + "/fira-code-font.zip"
+    download_path = USER_PATH + "/temp"
 
     # wget files
-    subprocess.run(["wget", "-O", download_path, fira_code_url])
+    subprocess.run(["wget", "-O", download_path, hack_font_url])
 
     # fonts dir
     fonts_dir = USER_PATH + "/.fonts"
+
+    # if it doesn't exists, create.
     if not os.path.exists(fonts_dir):
         os.mkdir(fonts_dir)
 
     # unzip the font
-    subprocess.run(["unzip", download_path, "-d", fonts_dir + "/FiraCode"])
+    subprocess.run(["unzip", download_path, "-d", fonts_dir + "/Hack_font"])
 
     # refresh the fc-cache
     subprocess.run(["fc-cache", "-fv"])
 
     # removing temporary files
     subprocess.run(["rm", "--verbose", download_path])
+
+
+def menage_temp_dir():
+
+    # the default temp location
+    # $HOME/temp <==
+    temp_dir = USER_PATH + "/temp"
+
+    # check temp
+    if os.path.exists(temp_dir):
+
+        # delete it
+        subprocess.run(["rm", "-rfv", temp_dir])
 
 
 def theme_installation():
@@ -275,6 +299,8 @@ def icons_installation():
 
     # url
     zafiro_git_url = "https://github.com/zayronxio/Zafiro-icons.git"
+
+    # isn't necessary delete  the temp dir, after theme_installation()
 
     # clone the repo
     subprocess.run(["git", "clone", zafiro_git_url, USER_PATH + "/temp"])
