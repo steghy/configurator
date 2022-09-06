@@ -54,7 +54,10 @@ SRC_DIR = USER_PATH + "/Documents/configs"
 CNF_DIR = USER_PATH + "/.config"
 
 # .local/share dir
-LCL_DIR = USER_PATH + "/.local/share"
+LCL_SHARE_DIR = USER_PATH + "/.local/share"
+
+# download path
+temp_file = USER_PATH + "/temp"
 
 
 def main():
@@ -77,28 +80,28 @@ def main():
     print(logo)                   # pacman steghy logo
 
     # network
-    # resolv_dns()                  # OK
+    # resolv_dns()                  # test
 
     # update
-    # system_apt_update()           # update
+    # system_apt_update()           # OK (always)
 
     # programs installation
-    # apt_programs_installation()      # OK
-    # flatpak_programs_installation()  # TEST
-
-    # others
-    # musikcube_installation()      # OK
+    # apt_programs_installation()      # test
+    # flatpak_programs_installation()  # test
 
     # delete old temp dir if it exists
-    menage_temp_dir()
+    #  menage_temp_dir()             # ok
+
+    # others
+    # musikcube_installation()      # test
 
     # customization
-    theme_installation()          # OK
-    font_installation()           # OK
-    icons_installation()          # OK
+    theme_installation()          # ok
+    # font_installation()           # ok
+    # icons_installation()          # ok
 
     # python libs
-    # python_libs_installation()    # OK
+    # python_libs_installation()    # test
 
     # TEST
     # create_symlinks()             # symlinks creation..
@@ -203,17 +206,18 @@ def musikcube_installation():
     musikcube_0_98_0 = "/download/0.98.0/musikcube_standalone_0.98.0_amd64.deb"
     musikcube_url = musikcube_releases + musikcube_0_98_0
 
-    # path
-    download_path = USER_PATH + "/temp"
-
     # wget deb file
-    subprocess.run(["wget", "-O", download_path, musikcube_url])
+    code = subprocess.run(["wget", "-O", temp_file, musikcube_url]).returncode
+
+    # something went wrong, don't proceed
+    if code:
+        return
 
     # installation
-    subprocess.run(["sudo", "dpkg", "-i", download_path])
+    subprocess.run(["sudo", "dpkg", "-i", temp_file])
 
     # remove temporary file
-    subprocess.run(["rm", "--verbose", download_path])
+    subprocess.run(["rm", "-v", temp_file])
 
 
 def font_installation():
@@ -227,40 +231,39 @@ def font_installation():
     version = "/download/v2.1.0/Hack.zip"
     hack_font_url = hack_releases_url + version
 
-    # download path
-    download_path = USER_PATH + "/temp"
-
     # wget files
-    subprocess.run(["wget", "-O", download_path, hack_font_url])
+    code = subprocess.run(["wget", "-O", temp_file, hack_font_url]).returncode
+
+    # something went wrong, don't proceed
+    if code:
+        return
 
     # fonts dir
     fonts_dir = USER_PATH + "/.fonts"
 
     # if it doesn't exists, create.
-    if not os.path.exists(fonts_dir):
-        os.mkdir(fonts_dir)
+    if os.path.exists(fonts_dir):
+        subprocess.run(["rm", "-rfv", fonts_dir])
+    os.mkdir(fonts_dir)
 
     # unzip the font
-    subprocess.run(["unzip", download_path, "-d", fonts_dir + "/Hack_font"])
+    subprocess.run(["unzip", temp_file, "-d", fonts_dir +
+                    "/hack-nerd-font"])
 
     # refresh the fc-cache
     subprocess.run(["fc-cache", "-fv"])
 
     # removing temporary files
-    subprocess.run(["rm", "--verbose", download_path])
+    subprocess.run(["rm", "rfv", temp_file])
 
 
 def menage_temp_dir():
 
-    # the default temp location
-    # $HOME/temp <==
-    temp_dir = USER_PATH + "/temp"
-
     # check temp
-    if os.path.exists(temp_dir):
+    if os.path.exists(temp_file):
 
         # delete it
-        subprocess.run(["rm", "-rfv", temp_dir])
+        subprocess.run(["rm", "-rfv", temp_file])
 
 
 def theme_installation():
@@ -273,22 +276,29 @@ def theme_installation():
     mojave_git_url = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
 
     # clone the repo
-    subprocess.run(["git", "clone", mojave_git_url, USER_PATH + "/temp"])
+    subprocess.run(["git", "clone", mojave_git_url, temp_file])
+
+    # themes path
+    themes_path = USER_PATH + "/.themes"
+
+    # check if already exists
+    if os.path.exists(themes_path):
+        subprocess.run(["rm", "-rfv", themes_path])
+    os.mkdir(themes_path)
 
     # execute the script
-    subprocess.run(["sudo", "bash", USER_PATH + "/temp/install.sh",
-                    "-d", USER_PATH + "/.themes",  # destination
+    subprocess.run(["bash", temp_file + "/install.sh",
+                    "-d", themes_path,  # destination
                     "-n", "mojave-dark-solid",     # theme name
                     "-c", "dark",                  # color
                     "-o", "solid",                 # opacity
                     "-a", "standard",              # title-button
                     "-s", "small",                 # button-size
                     "-t", "grey",                  # other colors
-                    "-i", "arch",                  # activities logo
-                    "-g"])                         # gdm theme
+                    "-i", "arch"])                 # activities logo
 
-    # deleting temporary files
-    subprocess.run(["rm", "-rf", USER_PATH + "/temp"])
+    # removing temporary files
+    subprocess.run(["rm", "-rfv", temp_file])
 
 
 def icons_installation():
@@ -300,16 +310,27 @@ def icons_installation():
     # url
     zafiro_git_url = "https://github.com/zayronxio/Zafiro-icons.git"
 
-    # isn't necessary delete  the temp dir, after theme_installation()
-
     # clone the repo
-    subprocess.run(["git", "clone", zafiro_git_url, USER_PATH + "/temp"])
+    code = subprocess.run(["git", "clone",
+                           zafiro_git_url, temp_file]).returncode
+
+    # something went wrong, don't proceed
+    if code:
+        return
+
+    # default user icons path
+    icons_path = LCL_SHARE_DIR + "/icons"
+
+    # if exists, delete it
+    if os.path.exists(icons_path):
+        subprocess.run(["rm", "-rfv", icons_path])
+    os.mkdir(icons_path)
 
     # execute the script
-    subprocess.run(["bash", USER_PATH + "/temp/Install-Zafiro-Icons.sh"])
+    subprocess.run(["bash", temp_file + "/Install-Zafiro-Icons.sh"])
 
     # deleting temporary files
-    subprocess.run(["rm", "-rfv", USER_PATH + "/temp"])
+    subprocess.run(["rm", "-rfv", temp_file])
 
 
 def system_apt_update():
@@ -428,19 +449,20 @@ def apt_programs_installation():
     subprocess.run(["sudo", "apt", "install",
                     "alacritty",             # terminal
                     "build-essential",       # ycm dependence
-                    "curl",                  # required
+                    "calcurse",              # terminal calendar
+                    "calibre",               # books manager
+                    "cava",                  # music visualizer
                     "cmake",                 # required
                     "cmatrix",               # fun
-                    "cava",                  # music visualizer
-                    "calibre",               # books manager
-                    "dpkg",                  # required
-                    "discord",               # chat
+                    "curl",                  # required
                     "default-jdk",           # ycm dependence
+                    "discord",               # chat
+                    "dpkg",                  # required
                     "flatpak",               # other pkgm
                     "git",                   # required
+                    "gnome-tweaks",          # customization
                     "golang",                # ycm dependence
                     "google-chrome-stable",  # browser
-                    "gnome-tweaks",          # customization
                     "htop",                  # process viewer
                     "inkscape",              # images
                     "mono-complete",         # ycm dependence
@@ -449,11 +471,11 @@ def apt_programs_installation():
                     "npm",                   # ycm dependence
                     "python3-dev",           # ycm dependence
                     "python3-pip",           # python pkgm
-                    "vim-nox",               # ycm dependence
-                    "vim",                   # text editor
-                    "vlc",                   # video player
                     "telegram-desktop",      # chats
                     "tmux",                  # terminal mux
+                    "vim",                   # text editor
+                    "vim-nox",               # ycm dependence
+                    "vlc",                   # video player
                     "wget"])                 # required
 
 
