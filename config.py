@@ -77,38 +77,38 @@ def main():
     print(logo)                   # pacman steghy logo
 
     # network
-    resolv_dns()                  # dns problem resolution
+    # resolv_dns()                  # OK
 
     # update
-    system_apt_update()           # update
+    # system_apt_update()           # update
 
     # programs installation
-    apt_programs_installation()      # programs installation (apt)
-    flatpak_programs_installation()  # programs installation (flatpak)
+    # apt_programs_installation()      # OK
+    # flatpak_programs_installation()  # TEST
 
     # others
-    musikcube_installation()      # Musikcube installation..
+    # musikcube_installation()      # OK
 
     # delete old temp dir if it exists
     menage_temp_dir()
 
     # customization
-    theme_installation()          # Mojave dark installation..
-    font_installation()           # Fira code font installation..
-    icons_installation()          # Zafiro icons installation..
+    theme_installation()          # OK
+    font_installation()           # OK
+    icons_installation()          # OK
 
     # python libs
-    python_libs_installation()    # pip install..
+    # python_libs_installation()    # OK
 
-    # symlinks
-    create_symlinks()             # symlinks creation..
+    # TEST
+    # create_symlinks()             # symlinks creation..
 
     # configurations
-    vim_plugins_configuration()   # vim configuration..
-    tmux_plugins_configuration()  # tmux configuration..
+    # vim_plugins_configuration()   # OK
+    # tmux_plugins_configuration()  # OK
 
     # notification sound
-    notify()                      # notification sound
+    # notify()                      # OK
 
 
 def create_symlinks():
