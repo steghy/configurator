@@ -1,6 +1,6 @@
 import os
 import sys
-import subprocess
+import subprocess as sp
 
 logo = '''
      :+sMs.
@@ -57,7 +57,10 @@ CNF_DIR = USER_PATH + "/.config"
 LCL_SHARE_DIR = USER_PATH + "/.local/share"
 
 # download path
-temp_file = USER_PATH + "/temp"
+TEMP_FILE = USER_PATH + "/temp"
+
+# error codes
+ERRORS = dict()
 
 
 def main():
@@ -79,39 +82,36 @@ def main():
     # fantastic title
     print(logo)                   # pacman steghy logo
 
-    # network
-    # resolv_dns()                  # test
+    # network configuration
+    resolv_dns()
 
-    # update
-    # system_apt_update()           # OK (always)
+    # system_apt_update()
 
     # programs installation
-    # apt_programs_installation()      # test
-    # flatpak_programs_installation()  # test
+    # apt_programs_installation()
+    # flatpak_programs_installation()
 
-    # delete old temp dir if it exists
-    #  menage_temp_dir()             # ok
+    # menage_temp()
 
-    # others
-    # musikcube_installation()      # test
+    # musikcube_installation()
 
-    # customization
-    theme_installation()          # ok
-    # font_installation()           # ok
-    # icons_installation()          # ok
+    # theme_installation()
+    # font_installation()
+    # icons_installation()
 
-    # python libs
-    # python_libs_installation()    # test
+    # python_libs_installation()
 
-    # TEST
-    # create_symlinks()             # symlinks creation..
+    create_symlinks()
 
     # configurations
-    # vim_plugins_configuration()   # OK
-    # tmux_plugins_configuration()  # OK
+    # vim_plugins_configuration()
+    # tmux_plugins_configuration()
+
+    # display the errors
+    display_errors()
 
     # notification sound
-    # notify()                      # OK
+    notify()
 
 
 def create_symlinks():
@@ -138,14 +138,15 @@ def create_symlinks():
         # musikcube/hotkeys
         CNF_DIR+"/musikcube/hotkeys": SRC_DIR+"/musikcube/hotkeys.json",
 
-        # eclipse (?)
+        # calcurse/keys
+        CNF_DIR+"/calcurse/keys": SRC_DIR+"/calcurse/keys"
     }
 
     for k, v in data.items():
 
         # always overwrite old files
         if os.path.exists(k):
-            subprocess.run(["rm", "--verbose", k])
+            sp.run(["rm", "--verbose", k])
 
         # alacritty, maybe neofetch
         parent_dir = os.path.dirname(k)
@@ -153,9 +154,12 @@ def create_symlinks():
             os.mkdir(parent_dir)
 
         # symlink creation
-        os.symlink(v, k)
-        print("Creating symlink.[SOURCE]:%s, [DEST]:%s"
-              % (v, k))
+        try:
+            os.symlink(v, k)
+            print("Creating symlink.[SOURCE]:%s, [DEST]:%s"
+                  % (v, k))
+        except OSError as os_error:
+            ERRORS["symlink"] = os_error
 
 
 def resolv_dns():
@@ -168,20 +172,23 @@ def resolv_dns():
     source = SRC_DIR + "/dns/head"
 
     # remove old file
-    subprocess.run(["sudo", "rm", "--verbose", target])
+    sp.run(["sudo", "rm", "-v", target])
+
+    # parent dir
+    parent_dir = os.path.dirname(target)
 
     # copy the new file
-    subprocess.run(["sudo", "cp", source, os.path.dirname(target)])
+    sp.run(["sudo", "cp", "-v",  source, parent_dir])
 
     # update resolv.conf
-    subprocess.run(["sudo", "rm", "--verbose", "/etc/resolv.conf"])
+    sp.run(["sudo", "rm", "-v", "/etc/resolv.conf"])
 
     # create the symlink
-    subprocess.run(["sudo", "ln", "-s",
+    sp.run(["sudo", "ln", "-sv",
                     "../run/resolvconf/resolv.conf",
                     "/etc/resolv.conf"])
     # update
-    subprocess.run(["sudo", "resolvconf", "-u"])
+    sp.run(["sudo", "resolvconf", "-u"])
 
 
 def notify():
@@ -190,7 +197,7 @@ def notify():
     # NOTIFICATION #
     ################
 
-    # sound to notify the termination of the configuration process
+    # fun notification
     from playsound import playsound
     playsound(SRC_DIR + "/notification/notification.wav")
 
@@ -207,17 +214,20 @@ def musikcube_installation():
     musikcube_url = musikcube_releases + musikcube_0_98_0
 
     # wget deb file
-    code = subprocess.run(["wget", "-O", temp_file, musikcube_url]).returncode
+    code = sp.run(["wget", "-O", TEMP_FILE, musikcube_url]).returncode
 
     # something went wrong, don't proceed
     if code:
-        return
+        ERRORS["wget musikcube"] = code
+        return  # don't proceed
 
     # installation
-    subprocess.run(["sudo", "dpkg", "-i", temp_file])
+    code_2 = sp.run(["sudo", "dpkg", "-i", TEMP_FILE]).returncode
+    if code_2:
+        ERRORS["dpkg -i"] = code_2
 
     # remove temporary file
-    subprocess.run(["rm", "-v", temp_file])
+    sp.run(["rm", "-v", TEMP_FILE])
 
 
 def font_installation():
@@ -232,38 +242,41 @@ def font_installation():
     hack_font_url = hack_releases_url + version
 
     # wget files
-    code = subprocess.run(["wget", "-O", temp_file, hack_font_url]).returncode
-
-    # something went wrong, don't proceed
+    code = sp.run(["wget", "-O", TEMP_FILE, hack_font_url]).returncode
     if code:
-        return
+        ERRORS["wget hack nerd font"] = code
+        return  # don't proceed
 
     # fonts dir
     fonts_dir = USER_PATH + "/.fonts"
 
     # if it doesn't exists, create.
     if os.path.exists(fonts_dir):
-        subprocess.run(["rm", "-rfv", fonts_dir])
+        sp.run(["rm", "-rfv", fonts_dir])
     os.mkdir(fonts_dir)
 
     # unzip the font
-    subprocess.run(["unzip", temp_file, "-d", fonts_dir +
-                    "/hack-nerd-font"])
-
-    # refresh the fc-cache
-    subprocess.run(["fc-cache", "-fv"])
+    code_2 = sp.run(["unzip", TEMP_FILE, "-d", fonts_dir +
+                     "/hack-nerd-font"])
+    if code_2:
+        ERRORS["unzip hack nerd font"] = code_2
+    else:
+        # refresh the fc-cache
+        code_3 = sp.run(["fc-cache", "-fv"])
+        if code_3:
+            ERRORS["fc-cache"] = code_3
 
     # removing temporary files
-    subprocess.run(["rm", "rfv", temp_file])
+    sp.run(["rm", "-rfv", TEMP_FILE])
 
 
-def menage_temp_dir():
+def remove_temp():
 
     # check temp
-    if os.path.exists(temp_file):
+    if os.path.exists(TEMP_FILE):
 
         # delete it
-        subprocess.run(["rm", "-rfv", temp_file])
+        sp.run(["rm", "-rfv", TEMP_FILE])
 
 
 def theme_installation():
@@ -276,29 +289,34 @@ def theme_installation():
     mojave_git_url = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
 
     # clone the repo
-    subprocess.run(["git", "clone", mojave_git_url, temp_file])
+    code = sp.run(["git", "clone",
+                   mojave_git_url, TEMP_FILE]).returncode
+    if code:
+        return  # don't proceed
 
     # themes path
     themes_path = USER_PATH + "/.themes"
 
     # check if already exists
     if os.path.exists(themes_path):
-        subprocess.run(["rm", "-rfv", themes_path])
+        sp.run(["rm", "-rfv", themes_path])
     os.mkdir(themes_path)
 
     # execute the script
-    subprocess.run(["bash", temp_file + "/install.sh",
-                    "-d", themes_path,  # destination
-                    "-n", "mojave-dark-solid",     # theme name
-                    "-c", "dark",                  # color
-                    "-o", "solid",                 # opacity
-                    "-a", "standard",              # title-button
-                    "-s", "small",                 # button-size
-                    "-t", "grey",                  # other colors
-                    "-i", "arch"])                 # activities logo
+    code_2 = sp.run(["bash", TEMP_FILE + "/install.sh",
+                     "-d", themes_path,  # destination
+                     "-n", "mojave-dark-solid",     # theme name
+                     "-c", "dark",                  # color
+                     "-o", "solid",                 # opacity
+                     "-a", "standard",              # title-button
+                     "-s", "small",                 # button-size
+                     "-t", "grey",                  # other color
+                     "-i", "arch"])                 # activities logo
+    if code_2:
+        ERRORS["themes_install.sh"] = code_2
 
     # removing temporary files
-    subprocess.run(["rm", "-rfv", temp_file])
+    sp.run(["rm", "-rfv", TEMP_FILE])
 
 
 def icons_installation():
@@ -311,26 +329,27 @@ def icons_installation():
     zafiro_git_url = "https://github.com/zayronxio/Zafiro-icons.git"
 
     # clone the repo
-    code = subprocess.run(["git", "clone",
-                           zafiro_git_url, temp_file]).returncode
-
-    # something went wrong, don't proceed
+    code = sp.run(["git", "clone",
+                   zafiro_git_url, TEMP_FILE]).returncode
     if code:
-        return
+        ERRORS["git clone zafiro"] = code
+        return  # don't proceed
 
     # default user icons path
     icons_path = LCL_SHARE_DIR + "/icons"
 
     # if exists, delete it
     if os.path.exists(icons_path):
-        subprocess.run(["rm", "-rfv", icons_path])
+        sp.run(["rm", "-rfv", icons_path])
     os.mkdir(icons_path)
 
     # execute the script
-    subprocess.run(["bash", temp_file + "/Install-Zafiro-Icons.sh"])
+    code_2 = sp.run(["bash", TEMP_FILE + "/Install-Zafiro-Icons.sh"])
+    if code_2:
+        ERRORS["icons_install.sh"] = code_2
 
     # deleting temporary files
-    subprocess.run(["rm", "-rfv", temp_file])
+    sp.run(["rm", "-rfv", TEMP_FILE])
 
 
 def system_apt_update():
@@ -339,8 +358,7 @@ def system_apt_update():
     # SYSTEM UPDATE #
     #################
 
-    subprocess.run(["sudo", "apt", "update"])
-    subprocess.run(["sudo", "apt", "upgrade"])
+    sp.run("sudo apt update && sudo apt upgrade", shell=True)
 
 
 def python_libs_installation():
@@ -350,10 +368,12 @@ def python_libs_installation():
     ############################
 
     # some python lib
-    subprocess.run(["pip", "install", "pyfiglet",
-                    "ddt", "flake8", "pillow",
-                    "pypi-json", "requests",
-                    "playsound"])
+    code = sp.run(["pip", "install", "pyfiglet",
+                   "ddt", "flake8", "pillow",
+                   "pypi-json", "requests",
+                   "playsound"])
+    if code:
+        ERRORS["pip"] = code
 
 
 def vim_plugins_configuration():
@@ -363,27 +383,33 @@ def vim_plugins_configuration():
     ##############################
 
     # default vundle dir
-    vundle_path = "/.vim/bundle/Vundle.vim"
+    vundle_path = USER_PATH + "/.vim/bundle/Vundle.vim"
 
     # remove old vundle dir if exists
-    if os.path.exists(USER_PATH + vundle_path):
-        subprocess.run(["rm", "-rfv", USER_PATH + vundle_path])
+    if os.path.exists(vundle_path):
+        sp.run(["rm", "-rfv", vundle_path])
 
     # clone vundle
-    git_vundle_code = \
-        subprocess.run(["git", "clone",
-                        "https://github.com/VundleVim/Vundle.vim.git",
-                        USER_PATH + vundle_path]).returncode
+    code = \
+        sp.run(["git", "clone",
+                "https://github.com/VundleVim/Vundle.vim.git",
+                vundle_path]).returncode
 
     # plugins installation
-    if not git_vundle_code:
-        vim_plugins_code = subprocess.run(["vim", "-c",
-                                           "PluginInstall",
-                                           "+qall"]).returncode
+    if not code:
+        code_2 = sp.run(["vim", "-c",
+                         "PluginInstall",
+                         "+qall"]).returncode
         # ycm installation
-        if not vim_plugins_code:
-            subprocess.run([USER_PATH + "/.vim/bundle/YouCompleteMe/" +
-                            "install.py", "--all"]).returncode
+        if code_2:
+            code_3 = sp.run([USER_PATH + "/.vim/bundle/YouCompleteMe/" +
+                             "install.py", "--all"]).returncode
+            if code_3:
+                ERRORS["ycm install.sh"] = code_3
+        else:
+            ERRORS["vim PluginInstall"] = code_2
+    else:
+        ERRORS["git clone vundle"] = code
 
 
 def tmux_plugins_configuration():
@@ -397,22 +423,28 @@ def tmux_plugins_configuration():
 
     # remove old tpm dir if exists
     if os.path.exists(USER_PATH + tpm_path):
-        subprocess.run(["rm", "-rfv", USER_PATH + tpm_path])
+        sp.run(["rm", "-rfv", USER_PATH + tpm_path])
 
     # clone tpm
-    git_tpm_code = subprocess.run(["git", "clone",
-                                   "https://github.com/" +
-                                   "tmux-plugins/tpm",
-                                   USER_PATH + tpm_path]).returncode
+    code = sp.run(["git", "clone",
+                   "https://github.com/" +
+                   "tmux-plugins/tpm",
+                   USER_PATH + tpm_path]).returncode
     # refresh tmux envirnment
-    if not git_tpm_code:
-        tmux_refr_env_code = subprocess.run(["tmux", "source",
-                                             USER_PATH +
-                                             "/.tmux.conf"]).returncode
+    if not code:
+        code_2 = sp.run(["tmux", "source",
+                         USER_PATH +
+                         "/.tmux.conf"]).returncode
         # plugins installation
-        if not tmux_refr_env_code:
-            subprocess.run(["bash", USER_PATH + "/.tmux/plugins/" +
-                            "tpm/scripts/" + "install_" + "plugins.sh"])
+        if not code_2:
+            code_3 = sp.run(["bash", USER_PATH + "/.tmux/plugins/" +
+                             "tpm/scripts/" + "install_" + "plugins.sh"])
+            if code_3:
+                ERRORS["tpm plugin.sh"] = code_3
+        else:
+            ERRORS["tmux source"] = code_2
+    else:
+        ERRORS["git clone tpm"] = code
 
 
 def flatpak_configuration():
@@ -421,9 +453,15 @@ def flatpak_configuration():
     # FLATPAK CONFIGURATION #
     #########################
 
-    subprocess.run("flatpak remote-add --user --if-not-exists"
-                   "flathub https://flathub.org/repo/flathub."
-                   "flatpakrepo", shell=True)
+    # command and url
+    flatpak_cmd = "flatpak remote-add --if-not-exists"
+    flathub_repo_url = "https://flathub.org/repo/flathub.flatpakrepo"
+
+    # add flathub repository
+    code = sp.run(flatpak_cmd + " " + flathub_repo_url, shell=True).returncode
+    if code:
+        print(code)
+        ERRORS["flathub"] = code
 
 
 def flatpak_programs_installation():
@@ -436,8 +474,8 @@ def flatpak_programs_installation():
     flatpak_configuration()
 
     # programs installation
-    subprocess.run(["flatpak", "install", "flathub",
-                    "org.eclipse.Java"])
+    sp.run(["flatpak", "install", "flathub",
+            "spotify"])
 
 
 def apt_programs_installation():
@@ -446,37 +484,47 @@ def apt_programs_installation():
     # PROGRAMS FROM APT #
     #####################
 
-    subprocess.run(["sudo", "apt", "install",
-                    "alacritty",             # terminal
-                    "build-essential",       # ycm dependence
-                    "calcurse",              # terminal calendar
-                    "calibre",               # books manager
-                    "cava",                  # music visualizer
-                    "cmake",                 # required
-                    "cmatrix",               # fun
-                    "curl",                  # required
-                    "default-jdk",           # ycm dependence
-                    "discord",               # chat
-                    "dpkg",                  # required
-                    "flatpak",               # other pkgm
-                    "git",                   # required
-                    "gnome-tweaks",          # customization
-                    "golang",                # ycm dependence
-                    "google-chrome-stable",  # browser
-                    "htop",                  # process viewer
-                    "inkscape",              # images
-                    "mono-complete",         # ycm dependence
-                    "neofetch",              # the best
-                    "nodejs",                # ycm dependence
-                    "npm",                   # ycm dependence
-                    "python3-dev",           # ycm dependence
-                    "python3-pip",           # python pkgm
-                    "telegram-desktop",      # chats
-                    "tmux",                  # terminal mux
-                    "vim",                   # text editor
-                    "vim-nox",               # ycm dependence
-                    "vlc",                   # video player
-                    "wget"])                 # required
+    sp.run(["sudo", "apt", "install",
+            "alacritty",             # terminal
+            "build-essential",       # ycm dependence
+            "calcurse",              # terminal calendar
+            "calibre",               # books manager
+            "cava",                  # music visualizer
+            "cmake",                 # required
+            "cmatrix",               # fun
+            "curl",                  # required
+            "default-jdk",           # ycm dependence
+            "discord",               # chat
+            "dpkg",                  # required
+            "flatpak",               # other pkgm
+            "git",                   # required
+            "gnome-tweaks",          # customization
+            "golang",                # ycm dependence
+            "google-chrome-stable",  # browser
+            "htop",                  # process viewer
+            "inkscape",              # images
+            "mono-complete",         # ycm dependence
+            "neofetch",              # the best
+            "nodejs",                # ycm dependence
+            "npm",                   # ycm dependence
+            "python3-dev",           # ycm dependence
+            "python3-pip",           # python pkgm
+            "telegram-desktop",      # chats
+            "tmux",                  # terminal mux
+            "vim",                   # text editor
+            "vim-nox",               # ycm dependence
+            "vlc",                   # video player
+            "wget"])                 # required
+
+
+def display_errors():
+
+    ##################
+    # DISPLAY ERRORS #
+    ##################
+
+    for k, v in ERRORS.items():
+        print("context: %s | error code: %s" % (k, v))
 
 
 # call

@@ -1,3 +1,26 @@
+############
+# SYMLINKS #
+############
+
+# .vimrc
+~/Documents/configs/vim/.vimrc == ~/.vimrc : True
+
+# tmux
+~/Documents/configs/tmux/.tmux.conf == ~/.tmux.conf : True
+
+# alacritty
+~/Documents/configs/alacritty/alacritty.yml == ~/.config/alacritty/alacritty.yml : True
+
+# neofetch
+~/Documents/configs/neofetch/config.conf == ~/.config/neofetch/config.conf : True
+
+# musikcube keys
+~/Documents/configs/musikcube/hotkeys.json == ~/.config/musikcube/hotkeys : True
+
+# calcurse keys
+~/Documents/configs/calcurse/keys == ~/.config/calcurse/keys : True
+
+
 #######
 # DNS #
 #######
@@ -18,7 +41,7 @@ check if works after reboot
 ##########
 
 ~/.themes/mojave-dark-solid then
-=> tweaks (app), look for themes 
+=> tweaks (app), look for themes
 
 
 #########
@@ -34,7 +57,7 @@ check if works after reboot
 ########
 
 ~/.fonts/Hack-font then
-=> tweaks (app), look for fonts then 
+=> tweaks (app), look for fonts then
 => alacritty ( terminal app ), check if Hack-font works there
 
 
@@ -58,4 +81,6 @@ check if all installed libs work
 #############
 # CALCOURSE #
 #############
+
+=> i don't know, for now.
 
