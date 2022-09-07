@@ -80,32 +80,32 @@ def main():
         sys.exit("don't run this script as a root!")
 
     # fantastic title
-    # print(logo)
+    print(logo)
 
     # network configuration
-    # resolv_dns()
+    resolv_dns()
 
-    # system_apt_update()
+    system_apt_update()
 
     # programs installation
-    # apt_programs_installation()
-    # flatpak_programs_installation()
+    apt_programs_installation()
+    flatpak_programs_installation()
 
-    # menage_temp()
+    remove_temp()
 
-    # musikcube_installation()
+    musikcube_installation()
 
-    # theme_installation()
-    # font_installation()
-    # icons_installation()
+    theme_installation()
+    font_installation()
+    icons_installation()
 
-    # python_libs_installation()
+    python_libs_installation()
 
     create_symlinks()
 
     # configurations
-    # vim_plugins_configuration()
-    # tmux_plugins_configuration()
+    vim_plugins_configuration()
+    tmux_plugins_configuration()
 
     # display the errors
     display_errors()
