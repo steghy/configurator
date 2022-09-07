@@ -15,7 +15,7 @@
 ~/Documents/configs/neofetch/config.conf == ~/.config/neofetch/config.conf : True
 
 # musikcube keys
-~/Documents/configs/musikcube/hotkeys.json == ~/.config/musikcube/hotkeys : True
+~/Documents/configs/musikcube/hotkeys.json == ~/.config/musikcube/hotkeys.json : True
 
 # calcurse keys
 ~/Documents/configs/calcurse/keys == ~/.config/calcurse/keys : True

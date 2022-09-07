@@ -80,10 +80,10 @@ def main():
         sys.exit("don't run this script as a root!")
 
     # fantastic title
-    print(logo)                   # pacman steghy logo
+    # print(logo)
 
     # network configuration
-    resolv_dns()
+    # resolv_dns()
 
     # system_apt_update()
 
@@ -136,13 +136,17 @@ def create_symlinks():
         CNF_DIR+"/neofetch/config.conf": SRC_DIR+"/neofetch/config.conf",
 
         # musikcube/hotkeys
-        CNF_DIR+"/musikcube/hotkeys": SRC_DIR+"/musikcube/hotkeys.json",
+        CNF_DIR+"/musikcube/hotkeys.json": SRC_DIR+"/musikcube/hotkeys.json",
 
         # calcurse/keys
         CNF_DIR+"/calcurse/keys": SRC_DIR+"/calcurse/keys"
     }
 
     for k, v in data.items():
+
+        if not os.path.exists(v):
+            ERRORS[v] = "doesn't exist"
+            continue
 
         # always overwrite old files
         if os.path.exists(k):
@@ -208,7 +212,7 @@ def musikcube_installation():
     # MUSIKCUBE #
     #############
 
-    # url
+    # url (maybe it would be better to do something else)
     musikcube_releases = "https://github.com/clangen/musikcube/releases"
     musikcube_0_98_0 = "/download/0.98.0/musikcube_standalone_0.98.0_amd64.deb"
     musikcube_url = musikcube_releases + musikcube_0_98_0
@@ -236,7 +240,7 @@ def font_installation():
     # FONT #
     ########
 
-    # url
+    # url (maybe it would be better to do something else)
     hack_releases_url = "https://github.com/ryanoasis/nerd-fonts/releases"
     version = "/download/v2.1.0/Hack.zip"
     hack_font_url = hack_releases_url + version
@@ -285,7 +289,7 @@ def theme_installation():
     # THEME #
     #########
 
-    # url
+    # url (maybe it would be better to do something else)
     mojave_git_url = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
 
     # clone the repo
@@ -325,7 +329,7 @@ def icons_installation():
     # ICONS #
     #########
 
-    # url
+    # url (maybe it would be better to do something else)
     zafiro_git_url = "https://github.com/zayronxio/Zafiro-icons.git"
 
     # clone the repo
@@ -523,6 +527,8 @@ def display_errors():
     # DISPLAY ERRORS #
     ##################
 
+    if ERRORS:
+        print("==============ERRORS================")
     for k, v in ERRORS.items():
         print("context: %s | error code: %s" % (k, v))
 
