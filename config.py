@@ -2,41 +2,6 @@ import os
 import sys
 import subprocess as sp
 
-logo = '''
-     :+sMs.
-  `:ddNMd-                         -o--`
- -sMMMMh:                          `+N+``
- yMMMMMs`     .....-/-...           `mNh/
- yMMMMMmh+-`:sdmmmmmmMmmmmddy+-``./ddNMMm
- STEGHYSTEGHYSTEGHYSTEGHYSTEGHYSTEGHYSTEGH
- STEGHYSTEGHYSTEGHYSTEGHYSTEGHYSTEGHYSTEG
-  STEGHYSTEGHYSTEGHYSTEGHYSTEGHYSTEGHYST
-  .STEGHYSTEGHYSTEGHYSTEGHYSTEGHYSTEGHYS.
- .omysmNNhy/+yNMMMMMMM-_-MNMMMMMMMMMNdNNy-
- /hMM:::::/hNMMMMMMM/      NMMMMMMM    MNh`
-.hMMMMdhdMMMMMMMMMM|        MMMMMM      MM
-:dMMMMMMMMMMMMMMMMM:    +   nMMMMM   +  MN
-/dMMMMMMMMMMMMMMMMM/        :yMMMM:     MM.
-:dMMMMMMMMMMMMMMMMMMn       oMMMMMMo/ dMNN/
-:hMMMMMMMMMMMMMMMMMMM=MMsMsMMMMMMNNmyMMMMM/`
- sNMMMMMMMMMMMMMMMMMMMMMMMmmNMMMMMNhnMNM:o.
- :yMMMMMMMMMMMMMNho+sydNNNNNNNMMMmysso///
-  /dMMMMMMMMMMMMMs-  ````````..``    //
-   .oMMMMMMMMMMMMNs`               ./y:`
-     +dNMMNMMMMMMMmy`          ``./ys.
-      `/hMMMMMMMMMMMNo-``    `.+yy+-`
-        `-/hmNMNMMMMMMmmddddhhy/-`
-            `-+oooyMMMdsoo+/:.
-
-
- ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
-██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
-██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
-██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
-╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
- ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
-
-'''
 #####################################################
 #                                                   #
 # SCRIPT FOR THE CONFIGURATION OF THE ENTIRE SYSTEM #
@@ -78,9 +43,6 @@ def main():
     # NO ROOT!
     if os.geteuid() == 0:
         sys.exit("don't run this script as a root!")
-
-    # fantastic title
-    print(logo)
 
     # network configuration
     resolv_dns()
