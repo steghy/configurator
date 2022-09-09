@@ -91,23 +91,24 @@ def main():
     apt_programs_installation()
     flatpak_programs_installation()
 
+    # setting python
+    python_libs_installation()
+
+    # various programs from the network
     remove_temp()
-
     musikcube_installation()
-
     theme_installation()
     font_installation()
     icons_installation()
 
-    python_libs_installation()
-
+    # symbolic links creation
     create_symlinks()
 
-    # configurations
+    # programs configuration
     vim_plugins_configuration()
     tmux_plugins_configuration()
 
-    # display the errors
+    # shows errors
     display_errors()
 
     # notification sound
@@ -365,21 +366,6 @@ def system_apt_update():
     sp.run("sudo apt update && sudo apt upgrade", shell=True)
 
 
-def python_libs_installation():
-
-    ############################
-    # PYTHON LIBS INSTALLATION #
-    ############################
-
-    # some python lib
-    code = sp.run(["pip", "install", "pyfiglet",
-                   "ddt", "flake8", "pillow",
-                   "pypi-json", "requests",
-                   "playsound"])
-    if code:
-        ERRORS["pip"] = code
-
-
 def vim_plugins_configuration():
 
     ##############################
@@ -405,7 +391,7 @@ def vim_plugins_configuration():
                          "PluginInstall",
                          "+qall"]).returncode
         # ycm installation
-        if code_2:
+        if not code_2:
             code_3 = sp.run([USER_PATH + "/.vim/bundle/YouCompleteMe/" +
                              "install.py", "--all"]).returncode
             if code_3:
@@ -442,7 +428,8 @@ def tmux_plugins_configuration():
         # plugins installation
         if not code_2:
             code_3 = sp.run(["bash", USER_PATH + "/.tmux/plugins/" +
-                             "tpm/scripts/" + "install_" + "plugins.sh"])
+                             "tpm/scripts/" + "install_"
+                             + "plugins.sh"]).returncode
             if code_3:
                 ERRORS["tpm plugin.sh"] = code_3
         else:
@@ -457,14 +444,10 @@ def flatpak_configuration():
     # FLATPAK CONFIGURATION #
     #########################
 
-    # command and url
-    flatpak_cmd = "flatpak remote-add --if-not-exists"
-    flathub_repo_url = "https://flathub.org/repo/flathub.flatpakrepo"
-
     # add flathub repository
-    code = sp.run(flatpak_cmd + " " + flathub_repo_url, shell=True).returncode
+    code = sp.run(["flatpak", "remote-add", "--if-not-exists",
+                   "https://flathub.org/repo/flathub.flatpakrepo"]).returncode
     if code:
-        print(code)
         ERRORS["flathub"] = code
 
 
@@ -479,7 +462,7 @@ def flatpak_programs_installation():
 
     # programs installation
     sp.run(["flatpak", "install", "flathub",
-            "spotify"])
+            "org.eclipse.java"])
 
 
 def apt_programs_installation():
@@ -489,6 +472,7 @@ def apt_programs_installation():
     #####################
 
     sp.run(["sudo", "apt", "install",
+            "acpi",                  # battery shower
             "alacritty",             # terminal
             "build-essential",       # ycm dependence
             "calcurse",              # terminal calendar
@@ -497,9 +481,11 @@ def apt_programs_installation():
             "cmake",                 # required
             "cmatrix",               # fun
             "curl",                  # required
+            "emacs",                 # just emacs
             "default-jdk",           # ycm dependence
             "discord",               # chat
             "dpkg",                  # required
+            "fim",                   # image visualizer
             "flatpak",               # other pkgm
             "git",                   # required
             "gnome-tweaks",          # customization
@@ -519,6 +505,27 @@ def apt_programs_installation():
             "vim-nox",               # ycm dependence
             "vlc",                   # video player
             "wget"])                 # required
+
+
+def python_libs_installation():
+
+    ############################
+    # PYTHON LIBS INSTALLATION #
+    ############################
+
+    # python libs
+    code = sp.run(["pip", "install",
+                   "Matplotlib",     # comment here
+                   "NumPy",          # comment here
+                   "ddt",            # comment here
+                   "flake8",         # comment here
+                   "pillow",         # comment here
+                   "playsound",      # comment here
+                   "pyfiglet",       # comment here
+                   "pypi-json",      # comment here
+                   "requests"])      # comment here
+    if code:
+        ERRORS["pip"] = code
 
 
 def display_errors():
