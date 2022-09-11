@@ -45,36 +45,36 @@ def main():
         sys.exit("don't run this script as a root!")
 
     # network configuration
-    resolv_dns()
+    # resolv_dns()
 
     system_apt_update()
 
     # programs installation
-    apt_programs_installation()
-    flatpak_programs_installation()
+    # apt_programs_installation()
+    # flatpak_programs_installation()
 
     # setting python
-    python_libs_installation()
+    # python_libs_installation()
 
     # various programs from the network
-    remove_temp()
-    musikcube_installation()
+    # remove_temp()
+    # musikcube_installation()
     theme_installation()
-    font_installation()
-    icons_installation()
+    # font_installation()
+    # icons_installation()
 
     # symbolic links creation
-    create_symlinks()
+    # create_symlinks()
 
     # programs configuration
-    vim_plugins_configuration()
-    tmux_plugins_configuration()
+    # vim_plugins_configuration()
+    # tmux_plugins_configuration()
 
     # shows errors
     display_errors()
 
     # notification sound
-    notify()
+    # notify()
 
 
 def create_symlinks():
@@ -273,12 +273,12 @@ def theme_installation():
     code_2 = sp.run(["bash", TEMP_FILE + "/install.sh",
                      "-d", themes_path,  # destination
                      "-n", "mojave-dark-solid",     # theme name
-                     "-c", "dark",                  # color
                      "-o", "solid",                 # opacity
                      "-a", "standard",              # title-button
                      "-s", "small",                 # button-size
                      "-t", "grey",                  # other color
                      "-i", "arch"])                 # activities logo
+    # "-c", "dark",                  # color
     if code_2:
         ERRORS["themes_install.sh"] = code_2
 
