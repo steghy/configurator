@@ -45,9 +45,9 @@ def main():
         sys.exit("don't run this script as a root!")
 
     # network configuration
-    # resolv_dns()
+    resolv_dns()
 
-    system_apt_update()
+    # system_apt_update()
 
     # programs installation
     # apt_programs_installation()
@@ -59,12 +59,12 @@ def main():
     # various programs from the network
     # remove_temp()
     # musikcube_installation()
-    theme_installation()
+    # theme_installation()
     # font_installation()
-    # icons_installation()
+    icons_installation()
 
     # symbolic links creation
-    # create_symlinks()
+    create_symlinks()
 
     # programs configuration
     # vim_plugins_configuration()
@@ -113,7 +113,7 @@ def create_symlinks():
 
         # always overwrite old files
         if os.path.exists(k):
-            sp.run(["rm", "--verbose", k])
+            sp.run(["rm", "-v", k])
 
         # alacritty, maybe neofetch
         parent_dir = os.path.dirname(k)
@@ -139,23 +139,38 @@ def resolv_dns():
     source = SRC_DIR + "/dns/head"
 
     # remove old file
-    sp.run(["sudo", "rm", "-v", target])
+    code = sp.run(["sudo", "rm", "-v", target]).returncode
 
-    # parent dir
-    parent_dir = os.path.dirname(target)
+    if not code:
+        # parent dir
+        parent_dir = os.path.dirname(target)
 
-    # copy the new file
-    sp.run(["sudo", "cp", "-v",  source, parent_dir])
+        # copy the new file
+        code_2 = sp.run(["sudo", "cp",
+                         "-v",  source, parent_dir]).returncode
 
-    # update resolv.conf
-    sp.run(["sudo", "rm", "-v", "/etc/resolv.conf"])
-
-    # create the symlink
-    sp.run(["sudo", "ln", "-sv",
-                    "../run/resolvconf/resolv.conf",
-                    "/etc/resolv.conf"])
-    # update
-    sp.run(["sudo", "resolvconf", "-u"])
+        if not code_2:
+            # updade etc/resolv.conf
+            code_3 = sp.run(["sudo", "rm",
+                             "-v", "/etc/resolv.conf"]).returncode
+            if not code_3:
+                # create the symlink
+                code_4 = sp.run(["sudo", "ln", "-sv",
+                                 "../run/resolvconf/resolv.conf",
+                                 "/etc/resolv.conf"]).returncode
+                if not code_4:
+                    # update
+                    code_5 = sp.run(["sudo", "resolvconf", "-u"]).returncode
+                    if code_5:
+                        ERRORS["resolvconf -u"] = code_5
+                else:
+                    ERRORS["dns: ln -s"] = code_4
+            else:
+                ERRORS["rm etc/resolv.conf"] = code_3
+        else:
+            ERRORS["cp %s to %s" % (source, parent_dir)] = code_2
+    else:
+        ERRORS["dns: rm head"] = code
 
 
 def notify():
@@ -224,12 +239,12 @@ def font_installation():
 
     # unzip the font
     code_2 = sp.run(["unzip", TEMP_FILE, "-d", fonts_dir +
-                     "/hack-nerd-font"])
+                     "/hack-nerd-font"]).returncode
     if code_2:
         ERRORS["unzip hack nerd font"] = code_2
     else:
         # refresh the fc-cache
-        code_3 = sp.run(["fc-cache", "-fv"])
+        code_3 = sp.run(["fc-cache", "-fv"]).returncode
         if code_3:
             ERRORS["fc-cache"] = code_3
 
@@ -277,7 +292,7 @@ def theme_installation():
                      "-a", "standard",              # title-button
                      "-s", "small",                 # button-size
                      "-t", "grey",                  # other color
-                     "-i", "arch"])                 # activities logo
+                     "-i", "arch"]).returncode      # activities logo
     # "-c", "dark",                  # color
     if code_2:
         ERRORS["themes_install.sh"] = code_2
@@ -294,7 +309,6 @@ def icons_installation():
 
     # url (maybe it would be better to do something else)
     zafiro_git_url = "https://github.com/zayronxio/Zafiro-icons.git"
-
     # clone the repo
     code = sp.run(["git", "clone",
                    zafiro_git_url, TEMP_FILE]).returncode
@@ -307,16 +321,17 @@ def icons_installation():
 
     # if exists, delete it
     if os.path.exists(icons_path):
-        sp.run(["rm", "-rfv", icons_path])
+        sp.run(["rm", "-rf", icons_path])
     os.mkdir(icons_path)
 
     # execute the script
     code_2 = sp.run(["bash", TEMP_FILE + "/Install-Zafiro-Icons.sh"])
     if code_2:
+        # error code 1 (rm github.com fail, bad script)
         ERRORS["icons_install.sh"] = code_2
 
     # deleting temporary files
-    sp.run(["rm", "-rfv", TEMP_FILE])
+    sp.run(["rm", "-rf", TEMP_FILE])
 
 
 def system_apt_update():
@@ -485,7 +500,7 @@ def python_libs_installation():
                    "playsound",      # comment here
                    "pyfiglet",       # comment here
                    "pypi-json",      # comment here
-                   "requests"])      # comment here
+                   "requests"]).returncode
     if code:
         ERRORS["pip"] = code
 
