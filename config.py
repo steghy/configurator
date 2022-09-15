@@ -50,31 +50,31 @@ def main():
     # system_apt_update()
 
     # programs installation
-    # apt_programs_installation()
-    # flatpak_programs_installation()
+    apt_programs_installation()
+    flatpak_programs_installation()
 
     # setting python
-    # python_libs_installation()
+    python_libs_installation()
 
     # various programs from the network
-    # remove_temp()
-    # musikcube_installation()
-    # theme_installation()
-    # font_installation()
+    remove_temp()
+    musikcube_installation()
+    theme_installation()
+    font_installation()
     icons_installation()
 
     # symbolic links creation
     create_symlinks()
 
     # programs configuration
-    # vim_plugins_configuration()
-    # tmux_plugins_configuration()
+    vim_plugins_configuration()
+    tmux_plugins_configuration()
 
     # shows errors
     display_errors()
 
     # notification sound
-    # notify()
+    notify()
 
 
 def create_symlinks():
