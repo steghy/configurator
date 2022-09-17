@@ -1,7 +1,0 @@
-scrivere il file in ~/Documents/configs/bash/file
-in coda al testo presente nel file ~/.bashrc.
-(introduce i comandi di export e alias).
-
-Supporto ad altre distribuzioni Gnu/linux ? (Arch based sopratutto).
-
-Testare eventualmente in VM
