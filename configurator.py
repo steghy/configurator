@@ -32,7 +32,7 @@ def main():
     ########
     # MAIN #
     ########
-    
+
     if os.geteuid() == 0:
         sys.exit("don't run this script as a root!")
 
