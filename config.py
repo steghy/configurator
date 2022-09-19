@@ -2,12 +2,11 @@ import os
 import sys
 import subprocess as sp
 
-#####################################################
-#                                                   #
-# SCRIPT FOR THE CONFIGURATION OF THE ENTIRE SYSTEM #
-#    (sush as .vimrc, alacritty.yml, .bashrc)       #
-#                                                   #
-#####################################################
+#############################
+# CONFIGURATOR.             #
+# Steghy.                   #
+# steghy.github@proton.me   #
+#############################
 
 # user path:
 USER_PATH = os.path.expanduser("~")
@@ -33,21 +32,14 @@ def main():
     ########
     # MAIN #
     ########
-
-    # update python first
-    python_version = sys.version_info[0:3]
-    if python_version < (3, 6, 0):
-        sys.exit("==> this script require Python >= 3.6.0 \n"
-                 "current python version %s" % sys.version)
-
-    # NO ROOT!
+    
     if os.geteuid() == 0:
         sys.exit("don't run this script as a root!")
 
     # network configuration
     resolv_dns()
 
-    # system_apt_update()
+    system_apt_update()
 
     # programs installation
     apt_programs_installation()
