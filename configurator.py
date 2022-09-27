@@ -4,7 +4,7 @@ import subprocess as sp
 
 #############################
 # CONFIGURATOR.             #
-# Steghy.                   #
+# steghy                    #
 # steghy.github@proton.me   #
 #############################
 
@@ -22,6 +22,8 @@ LCL_SHARE_DIR = USER_PATH + "/.local/share"
 
 # download path
 TEMP_FILE = USER_PATH + "/temp"
+
+CWD = os.getcwd()
 
 # error codes
 ERRORS = dict()
@@ -128,8 +130,13 @@ def resolv_dns():
     #######
 
     target = "/etc/resolvconf/resolv.conf.d/head"
-    source = SRC_DIR + "/dns/head"
+    source = CWD + "/dns-servers"
 
+    if not os.path.exists(source):
+        ERRORS["./dns-servers"] = "not exists"
+        return
+
+    # echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" >> target ?
     # remove old file
     code = sp.run(["sudo", "rm", "-v", target]).returncode
 
@@ -173,7 +180,7 @@ def notify():
 
     # fun notification
     from playsound import playsound
-    playsound(SRC_DIR + "/notification/notification.wav")
+    playsound(CWD + "/notification.wav")
 
 
 def musikcube_installation():
@@ -335,6 +342,32 @@ def system_apt_update():
     sp.run("sudo apt update && sudo apt upgrade", shell=True)
 
 
+def bash_configuration():
+
+    ######################
+    # BASH CONFIGURATION #
+    ######################
+
+    code = sp.run("sudo curl -sS https://starship.rs/install.sh"
+                  "| sh", shell=True).returncode
+    if code:
+        ERRORS["curl starship"] = code
+
+    bashrc_config = SRC_DIR + "/bash/bashrc-config"
+    bashrc = USER_PATH + "/.bashrc"
+    if os.path.exists(bashrc_config):
+        if os.path.exists(bashrc):
+            data = ""
+            with open(SRC_DIR + "/bash/.bashrc.config", mode='r') as file:
+                data = file.read()
+            with open(USER_PATH + "/.bashrc", mode='a') as file:
+                file.write(data)
+        else:
+            ERRORS["~/.bashrc"] = "not exists"
+    else:
+        ERRORS["config/bashrc-config"] = "not exists"
+
+
 def vim_plugins_configuration():
 
     ##############################
@@ -443,14 +476,13 @@ def apt_programs_installation():
     sp.run(["sudo", "apt", "install",
             "acpi",                  # battery shower
             "alacritty",             # terminal
+            "ant",                   # Apache ant
             "build-essential",       # ycm dependence
             "calcurse",              # terminal calendar
             "calibre",               # books manager
-            "cava",                  # music visualizer
             "cmake",                 # required
-            "cmatrix",               # fun
             "curl",                  # required
-            "emacs",                 # just emacs
+            "dconf",                 # dconf
             "default-jdk",           # ycm dependence
             "discord",               # chat
             "dpkg",                  # required
@@ -495,6 +527,20 @@ def python_libs_installation():
                    "requests"]).returncode
     if code:
         ERRORS["pip"] = code
+
+
+def import_custom_shortcuts():
+
+    ####################
+    # CUSTOM SHORTCUTS #
+    ####################
+
+    code = sp.run("dconf load / < custom-shortcuts.conf",
+                  shell=True).returncode
+    if code:
+        ERRORS["dconf load"] = code
+
+    # the custom key bindings only ? what about the others ?
 
 
 def display_errors():
