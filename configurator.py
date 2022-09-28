@@ -38,7 +38,7 @@ def main():
     if os.geteuid() == 0:
         sys.exit("don't run this script as a root!")
 
-    # network configuration
+    #  network configuration
     resolv_dns()
 
     system_apt_update()
@@ -63,6 +63,10 @@ def main():
     # programs configuration
     vim_plugins_configuration()
     tmux_plugins_configuration()
+    bash_configuration()
+
+    # import custom shortcuts
+    import_custom_shortcuts()
 
     # shows errors
     display_errors()
@@ -358,7 +362,7 @@ def bash_configuration():
     if os.path.exists(bashrc_config):
         if os.path.exists(bashrc):
             data = ""
-            with open(SRC_DIR + "/bash/.bashrc.config", mode='r') as file:
+            with open(SRC_DIR + "/bash/bashrc-config", mode='r') as file:
                 data = file.read()
             with open(USER_PATH + "/.bashrc", mode='a') as file:
                 file.write(data)
@@ -473,6 +477,8 @@ def apt_programs_installation():
     # PROGRAMS FROM APT #
     #####################
 
+    # Note dconf don't needs to be installed
+
     sp.run(["sudo", "apt", "install",
             "acpi",                  # battery shower
             "alacritty",             # terminal
@@ -482,7 +488,6 @@ def apt_programs_installation():
             "calibre",               # books manager
             "cmake",                 # required
             "curl",                  # required
-            "dconf",                 # dconf
             "default-jdk",           # ycm dependence
             "discord",               # chat
             "dpkg",                  # required
