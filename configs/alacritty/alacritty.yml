@@ -1,8 +1,7 @@
 #NOTE: if you delete this file, make sure
 #####  you generate  a new symlink between this
 #####  and the alacritty.yml file in
-#####  ~/Documents/configs/alacritty/
-#####   alacritty.yml.
+#####  path_to_alacritty.yml_concrete_file
 
 ##########
 # WINDOW #
