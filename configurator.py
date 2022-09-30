@@ -38,43 +38,43 @@ def main():
     if os.geteuid() == 0:
         sys.exit("don't run this script as a root!")
 
-    #  network configuration
+    # network configuration
     # resolv_dns()
 
-    # system_apt_update()
+    system_apt_update()
 
     # programs installation
-    # apt_programs_installation()
+    apt_programs_installation()
 
     # setting python
     python_libs_installation()
 
     # various programs from the network
-    # remove_temp()
-    # musikcube_installation()
-    # theme_installation()
-    # font_installation()
-    # icons_installation()
+    remove_temp()
+    musikcube_installation()
+    theme_installation()
+    font_installation()
+    icons_installation()
 
     # symbolic links creation
-    # create_symlinks()
+    create_symlinks()
 
     # programs configuration
-    # vim_plugins_configuration()
-    # tmux_plugins_configuration()
-    # bash_configuration()
+    vim_plugins_configuration()
+    tmux_plugins_configuration()
+    bash_configuration()
 
     # import custom shortcuts
-    # imp_cs_gnome()
+    imp_cs_gnome()
 
     # chmods
-    # chmod_au_only()
+    chmod_au_only()
 
     # shows errors
     display_errors()
 
     # notification sound
-    # notify()
+    notify()
 
 
 def create_symlinks():
@@ -404,7 +404,6 @@ def apt_programs_installation():
             "calibre",               # books manager
             "cmake",                 # required
             "curl",                  # required
-            "default-jdk",           # ycm dependence
             "discord",               # chat
             "dpkg",                  # required
             "fim",                   # image visualizer
@@ -418,6 +417,7 @@ def apt_programs_installation():
             "mono-complete",         # ycm dependence
             "neofetch",              # the best
             "npm",                   # ycm dependence
+            "openjdk-18-jdk"         # jdk
             "python3-dev",           # ycm dependence
             "python3-pip",           # python pkgm
             "telegram-desktop",      # chats
@@ -474,6 +474,10 @@ def imp_cs_gnome():
         ERRORS["dconf load"] = code
 
 
+def disable_wkey():
+    sp.run("gsettings set org.gnome.mutter overlay-key ''", shell=True)
+
+
 def display_errors():
 
     ##################
@@ -493,3 +497,4 @@ def remove_temp():
 
 if __name__ == "__main__":
     main()
+    sys.exit(0)
