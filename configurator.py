@@ -8,11 +8,13 @@ import subprocess as sp
 # steghy.github@proton.me   #
 #############################
 
+CWD = os.getcwd()
+
 # user path:
 USER_PATH = os.path.expanduser("~")
 
 # source files:
-SRC_DIR = USER_PATH + "/Documents/configs"
+SRC_DIR = CWD + "/configs"
 
 # .config dir
 CNF_DIR = USER_PATH + "/.config"
@@ -22,8 +24,6 @@ LCL_SHARE_DIR = USER_PATH + "/.local/share"
 
 # download path
 TEMP_FILE = USER_PATH + "/temp"
-
-CWD = os.getcwd()
 
 # error codes
 ERRORS = dict()
@@ -39,39 +39,42 @@ def main():
         sys.exit("don't run this script as a root!")
 
     #  network configuration
-    resolv_dns()
+    # resolv_dns()
 
-    system_apt_update()
+    # system_apt_update()
 
     # programs installation
-    apt_programs_installation()
+    # apt_programs_installation()
 
     # setting python
     python_libs_installation()
 
     # various programs from the network
-    remove_temp()
-    musikcube_installation()
-    theme_installation()
-    font_installation()
-    icons_installation()
+    # remove_temp()
+    # musikcube_installation()
+    # theme_installation()
+    # font_installation()
+    # icons_installation()
 
     # symbolic links creation
-    create_symlinks()
+    # create_symlinks()
 
     # programs configuration
-    vim_plugins_configuration()
-    tmux_plugins_configuration()
-    bash_configuration()
+    # vim_plugins_configuration()
+    # tmux_plugins_configuration()
+    # bash_configuration()
 
     # import custom shortcuts
-    imp_cs_gnome()
+    # imp_cs_gnome()
+
+    # chmods
+    # chmod_au_only()
 
     # shows errors
     display_errors()
 
     # notification sound
-    notify()
+    # notify()
 
 
 def create_symlinks():
@@ -82,24 +85,14 @@ def create_symlinks():
 
     # data files
     data = {
-
-        # .vimrc
-        USER_PATH+"/.vimrc": SRC_DIR+"/vim/.vimrc",
-
-        # .tmux.conf
-        USER_PATH+"/.tmux.conf": SRC_DIR+"/tmux/.tmux.conf",
-
-        # alacritty.yml
-        CNF_DIR+"/alacritty/alacritty.yml": SRC_DIR+"/alacritty/alacritty.yml",
-
-        # neofetch/config.conf
-        CNF_DIR+"/neofetch/config.conf": SRC_DIR+"/neofetch/config.conf",
-
-        # musikcube/hotkeys
-        CNF_DIR+"/musikcube/hotkeys.json": SRC_DIR+"/musikcube/hotkeys.json",
-
-        # calcurse/keys
-        CNF_DIR+"/calcurse/keys": SRC_DIR+"/calcurse/keys"
+        USER_PATH + "/.vimrc": SRC_DIR + "/vim/.vimrc",
+        USER_PATH + "/.tmux.conf": SRC_DIR + "/tmux/.tmux.conf",
+        CNF_DIR + "/alacritty/alacritty.yml": SRC_DIR +
+        "/alacritty/alacritty.yml",
+        CNF_DIR + "/neofetch/config.conf": SRC_DIR + "/neofetch/config.conf",
+        CNF_DIR + "/musikcube/hotkeys.json": SRC_DIR +
+        "/musikcube/hotkeys.json",
+        CNF_DIR + "/calcurse/keys": SRC_DIR + "/calcurse/keys"
     }
 
     for k, v in data.items():
@@ -349,6 +342,7 @@ def vim_plugins_configuration():
                 vundle_path]).returncode
 
     if not code:
+        sp.run(["mkdir", "-v", USER_PATH + "/.vim/swap"])
         code_2 = sp.run(["vim", "-c",
                          "PluginInstall",
                          "+qall"]).returncode
@@ -423,7 +417,6 @@ def apt_programs_installation():
             "inkscape",              # images
             "mono-complete",         # ycm dependence
             "neofetch",              # the best
-            "nodejs",                # ycm dependence
             "npm",                   # ycm dependence
             "python3-dev",           # ycm dependence
             "python3-pip",           # python pkgm
@@ -435,11 +428,19 @@ def apt_programs_installation():
             "wget"])                 # required
 
 
+def snap_apps_installation():
+    pass
+
+
 def python_libs_installation():
 
     ############################
     # PYTHON LIBS INSTALLATION #
     ############################
+
+    if os.path.exists("/usr/bin/python3"):
+        if not os.path.exists("/usr/bin/python"):
+            sp.run("sudo ln -sv /usr/bin/python3 /usr/bin/python", shell=True)
 
     code = sp.run(["pip", "install",
                    "Matplotlib",     # comment here
@@ -453,6 +454,12 @@ def python_libs_installation():
                    "requests"]).returncode
     if code:
         ERRORS["pip"] = code
+
+
+def chmod_au_only():
+    sp.run(["chmod", "o=", USER_PATH + "/Documents", "-vR"])
+    sp.run(["chmod", "o=", USER_PATH + "/Music", "-vR"])
+    sp.run(["chmod", "o=", USER_PATH + "/Pictures", "-vR"])
 
 
 def imp_cs_gnome():

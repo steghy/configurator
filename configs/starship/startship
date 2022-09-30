@@ -1,0 +1,6 @@
+# install the latest version
+sudo curl -sS https://starship.rs/install.sh | sh
+
+# add the following to the end of ~/.bashrc
+eval "$(starship init bash)"
+

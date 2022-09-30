@@ -1,0 +1,22 @@
+#################
+# STARTSHIP REQ #
+#################
+
+eval "$(starship init bash)"
+
+##########
+# EXPORT #
+##########
+
+export PATH="~/Documents/codes/bash:$PATH"
+
+#########
+# ALIAS #
+#########
+
+alias graph='git log --all --decorate --oneline --graph'
+alias updade='sudo apt update && sudo apt upgrade'
+alias acs='alacritty-themes'
+alias batt='acpi'
+alias pvpn='protonvpn-cli'
+

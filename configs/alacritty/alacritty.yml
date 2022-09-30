@@ -1,0 +1,127 @@
+#NOTE: if you delete this file, make sure
+#####  you generate  a new symlink between this
+#####  and the alacritty.yml file in
+#####  ~/Documents/configs/alacritty/
+#####   alacritty.yml.
+
+##########
+# WINDOW #
+##########
+window:
+  padding:
+    x: 3
+    y: 3
+  decorations: full
+  opacity: 0.95
+
+########
+# FONT #
+########
+font:
+  normal:
+    family: Hack Nerd Font
+    style: Regular
+  size: 11.0
+draw_bold_text_with_bright_colors: true
+
+##########
+# CURSOR #
+##########
+cursor:
+  style:
+    Values for `shape`: null
+    shape: Block
+    blinking: on
+  blink_interval: 500
+  unfocused_hollow: true
+
+#########
+# MOUSE #
+#########
+mouse:
+  hide_when_typing: true
+
+################
+# KEY BINDINGS #
+################
+key_bindings:
+  - { key: V, mods: Control|Shift, action: Paste }
+  - { key: C, mods: Control|Shift, action: Copy }
+  - { key: S, mods: Control|Shift, action: SearchBackward }
+  - { key: Key0, mods: Control, action: ResetFontSize }
+  - { key: Plus, mods: Control, action: IncreaseFontSize }
+  - { key: Minus, mods: Control, action: DecreaseFontSize }
+
+################
+# ZENBURN FONT #
+################
+schemes:
+  # Default colors
+  primary:
+    background: '0x383838'
+    foreground: '0xdcdccc'
+
+  # Colors the cursor will use if `custom_cursor_colors` is true
+  cursor:
+    text: '0x383838'
+    cursor: '0xdcdccc'
+
+  # Normal colors
+  normal:
+    black: '0x383838'
+    red: '0xdca3a3'
+    green: '0x5f7f5f'
+    yellow: '0xe0cf9f'
+    blue: '0x7cb8bb'
+    magenta: '0xdc8cc3'
+    cyan: '0x93e0e3'
+    white: '0xdcdccc'
+
+  # Bright colors
+  bright:
+    black: '0x6f6f6f'
+    red: '0xdca3a3'
+    green: '0x5f7f5f'
+    yellow: '0xe0cf9f'
+    blue: '0x7cb8bb'
+    magenta: '0xdc8cc3'
+    cyan: '0x93e0e3'
+    white: '0xffffff'
+
+  indexed_colors:
+    - { index: 16, color: '0xdfaf8f' }
+    - { index: 17, color: '0x000000' }
+    - { index: 18, color: '0x404040' }
+    - { index: 19, color: '0x606060' }
+    - { index: 20, color: '0x808080' }
+    - { index: 21, color: '0xc0c0c0' }
+colors:
+  # Default colors
+  primary:
+    # hard contrast: background = '#f9f5d7'
+    background: '#fbf1c7'
+    # soft contrast: background = '#f2e5bc'
+    foreground: '#3c3836'
+
+  # Normal colors
+  normal:
+    black: '#fbf1c7'
+    red: '#cc241d'
+    green: '#98971a'
+    yellow: '#d79921'
+    blue: '#458588'
+    magenta: '#b16286'
+    cyan: '#689d6a'
+    white: '#7c6f64'
+
+  # Bright colors
+  bright:
+    black: '#928374'
+    red: '#9d0006'
+    green: '#79740e'
+    yellow: '#b57614'
+    blue: '#076678'
+    magenta: '#8f3f71'
+    cyan: '#427b58'
+    white: '#3c3836'
+theme: Gruvbox-Light
