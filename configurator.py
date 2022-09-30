@@ -555,7 +555,7 @@ def display_errors():
     ##################
 
     if ERRORS:
-        print("==============ERRORS================")
+        print("> Errors:")
     for k, v in ERRORS.items():
         print("context: %s | error code: %s" % (k, v))
 
