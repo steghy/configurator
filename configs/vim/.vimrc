@@ -3,7 +3,7 @@
 "	VIM CONFIGURATION FILE          #
 "                                       #
 "########################################
-
+"
 " required (vundle stuff)
 set nocompatible
 filetype off
