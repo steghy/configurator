@@ -417,9 +417,10 @@ def apt_programs_installation():
             "mono-complete",         # ycm dependence
             "neofetch",              # the best
             "npm",                   # ycm dependence
-            "openjdk-18-jdk"         # jdk
+            "openjdk-18-jdk",        # jdk
             "python3-dev",           # ycm dependence
             "python3-pip",           # python pkgm
+            "ranger",                # ranger
             "telegram-desktop",      # chats
             "tmux",                  # terminal mux
             "vim",                   # text editor
