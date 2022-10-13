@@ -429,7 +429,14 @@ def apt_programs_installation():
 
 
 def snap_apps_installation():
-    pass
+    code = sp.run(["sudo", "snap", "install",
+                   "eclipse", "--classic"]).returncode
+    code_2 = sp.run(["sudo", "snap", "install",
+                     "drawio"]).returncode
+    if code:
+        ERRORS["snap eclipse"] = code
+    if code_2:
+        ERRORS["snap drawio"] = code_2
 
 
 def python_libs_installation():
@@ -472,9 +479,6 @@ def imp_cs_gnome():
                   shell=True).returncode
     if code:
         ERRORS["dconf load"] = code
-
-
-def disable_wkey():
     sp.run("gsettings set org.gnome.mutter overlay-key ''", shell=True)
 
 
