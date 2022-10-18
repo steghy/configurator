@@ -11,7 +11,7 @@ window:
     x: 3
     y: 3
   decorations: full
-  opacity: 0.95
+  opacity: 1.0
 
 ########
 # FONT #
