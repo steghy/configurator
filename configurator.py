@@ -476,11 +476,29 @@ def imp_cs_gnome():
     # CUSTOM SHORTCUTS #
     ####################
 
+    data = {
+        SRC_DIR + "/gnome_key/dump_1":
+        "/org/gnome/settings-daemon/plugins/media-keys/",
+        SRC_DIR + "/gnome_key/dump_2": "/org/gnome/desktop/wm/keybindings/",
+        SRC_DIR + "/gnome_key/dump_3": "/org/gnome/shell/keybindings/",
+        SRC_DIR + "/gnome_key/dump_4": "/org/gnome/mutter/keybindings/",
+        SRC_DIR + "/gnome_key/dump_5":
+        "/org/gnome/mutter/wayland/keybindings/",
+    }
+
     code = sp.run("dconf load / < custom-shortcuts.conf",
                   shell=True).returncode
     if code:
-        ERRORS["dconf load"] = code
-    sp.run("gsettings set org.gnome.mutter overlay-key ''", shell=True)
+        ERRORS["dconf load custom-shortcuts"] = code
+    code_2 = sp.run("gsettings set org.gnome.mutter overlay-key ''",
+                    shell=True).returncode
+    if code_2:
+        ERRORS["gsettings"] = code_2
+    for k, v in data.items():
+        code_3 = sp.run("cat " + k + " | " +
+                        "dconf load " + v + "--verbose", shell=True).returncode
+        if code_3:
+            ERRORS["cat & dconf load error"] = code_3
 
 
 def display_errors():

@@ -1,0 +1,38 @@
+[/]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
+email=@as []
+help=@as []
+home=@as []
+logout=@as []
+magnifier=@as []
+magnifier-zoom-in=@as []
+magnifier-zoom-out=@as []
+screenreader=@as []
+search=@as []
+terminal=@as []
+www=@as []
+
+[custom-keybindings/PopLaunch1]
+binding='Launch1'
+command='gnome-control-center wifi'
+name='WiFi'
+
+[custom-keybindings/custom0]
+binding='<Super>m'
+command='alacritty --command musikcube'
+name='Musikcube'
+
+[custom-keybindings/custom1]
+binding='<Super>Return'
+command='alacritty'
+name='Alacritty'
+
+[custom-keybindings/custom2]
+binding='<Super>b'
+command='google-chrome'
+name='Chrome'
+
+[custom-keybindings/custom3]
+binding='<Super>f'
+command='nautilus'
+name='Nautilus'
