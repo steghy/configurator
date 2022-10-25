@@ -29,54 +29,6 @@ TEMP_FILE = USER_PATH + "/temp"
 ERRORS = dict()
 
 
-def main():
-
-    ########
-    # MAIN #
-    ########
-
-    if os.geteuid() == 0:
-        sys.exit("don't run this script as a root!")
-
-    # network configuration
-    # resolv_dns()
-
-    system_apt_update()
-
-    # programs installation
-    apt_programs_installation()
-
-    # setting python
-    python_libs_installation()
-
-    # various programs from the network
-    remove_temp()
-    musikcube_installation()
-    theme_installation()
-    font_installation()
-    icons_installation()
-
-    # symbolic links creation
-    create_symlinks()
-
-    # programs configuration
-    vim_plugins_configuration()
-    tmux_plugins_configuration()
-    bash_configuration()
-
-    # import custom shortcuts
-    imp_cs_gnome()
-
-    # chmods
-    chmod_au_only()
-
-    # shows errors
-    display_errors()
-
-    # notification sound
-    notify()
-
-
 def create_symlinks():
 
     ############
@@ -516,6 +468,54 @@ def display_errors():
 def remove_temp():
     if os.path.exists(TEMP_FILE):
         sp.run(["rm", "-rfv", TEMP_FILE])
+
+
+def main():
+
+    ########
+    # MAIN #
+    ########
+
+    if os.geteuid() == 0:
+        sys.exit("don't run this script as a root!")
+
+    # network configuration
+    # resolv_dns()
+
+    system_apt_update()
+
+    # programs installation
+    apt_programs_installation()
+
+    # setting python
+    python_libs_installation()
+
+    # various programs from the network
+    remove_temp()
+    musikcube_installation()
+    theme_installation()
+    font_installation()
+    icons_installation()
+
+    # symbolic links creation
+    create_symlinks()
+
+    # programs configuration
+    vim_plugins_configuration()
+    tmux_plugins_configuration()
+    bash_configuration()
+
+    # import custom shortcuts
+    imp_cs_gnome()
+
+    # chmods
+    chmod_au_only()
+
+    # shows errors
+    display_errors()
+
+    # notification sound
+    notify()
 
 
 if __name__ == "__main__":
