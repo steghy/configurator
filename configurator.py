@@ -110,18 +110,6 @@ def resolv_dns():
     else:
         ERRORS["dns: rm head"] = code
 
-
-def notify():
-
-    ################
-    # NOTIFICATION #
-    ################
-
-    # fun notification
-    from playsound import playsound
-    playsound(CWD + "/notification.wav")
-
-
 def musikcube_installation():
 
     #############
@@ -480,7 +468,7 @@ def main():
         sys.exit("don't run this script as a root!")
 
     # network configuration
-    # resolv_dns()
+    resolv_dns()
 
     system_apt_update()
 
@@ -513,9 +501,6 @@ def main():
 
     # shows errors
     display_errors()
-
-    # notification sound
-    notify()
 
 
 if __name__ == "__main__":
