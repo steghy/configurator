@@ -110,6 +110,7 @@ def resolv_dns():
     else:
         ERRORS["dns: rm head"] = code
 
+
 def musikcube_installation():
 
     #############

@@ -24,7 +24,7 @@ set foldlevel=9
 set mouse=a
 
 " vim update time
-set updatetime=400
+set updatetime=1000
 
 " Not necesary
 map <C-c> <Nop>
